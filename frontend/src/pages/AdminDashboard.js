@@ -344,9 +344,9 @@ function AdminDashboard() {
       </section>
 
       <section className="mb-12">
-        <h3 className="text-2xl font-semibold mb-4">Manage Products</h3>
+        <h3 className="text-2xl font-semibold mb-4">Manage News</h3>
         <form onSubmit={handleAddNews} className="bg-white p-6 rounded shadow mb-6">
-          <h4 className="text-xl font-bold mb-4">Add Product to Products</h4>
+          <h4 className="text-xl font-bold mb-4">Add New News</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
