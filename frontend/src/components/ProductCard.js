@@ -8,7 +8,7 @@ export default memo(function ProductCard({ product }) {
     <div className="relative bg-white rounded-2xl shadow-md p-4 sm:p-6 md:p-8 hover:shadow-2xl hover:border-2 hover:border-yellow-400 transition-all duration-300 group flex flex-col h-full min-w-0 border border-gray-200"> {/* Added subtle border */}
       {product.image && (
         <img
-          src={`http://localhost:5000${product.image}`} // Ensure the backend URL is prefixed
+          src={`${product.image}`} // Ensure the backend URL is prefixed
           alt={product.name?.[lang] || product.name?.en || "Product Image"} // Improved alt attribute
           className="w-full max-w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 object-contain rounded-lg mb-4 border border-gray-300 hover:border-green-400 transition-colors"
           loading="lazy" // Add lazy loading

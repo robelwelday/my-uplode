@@ -35,14 +35,6 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes); // Add contact route
 
-// Serve React App in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/build', 'index.html'));
-  });
-}
-
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
