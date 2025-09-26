@@ -1,0 +1,7 @@
+.product-name {
+    // ...existing code...
+    white-space: normal; /* Allows text to wrap */
+    word-wrap: break-word; /* Breaks long words if necessary */
+    overflow-wrap: break-word; /* Ensures compatibility for modern browsers */
+    overflow: hidden; /* Prevents text from overflowing the container */
+}

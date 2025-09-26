@@ -1,0 +1,146 @@
+import React, { useEffect, useState, memo } from "react";
+import { Link } from "react-router-dom";
+import Hero from "../components/Hero";
+import Values from "../components/Values";
+import { useLanguage } from "../context/LanguageContext";
+import api from "../api/api"; // Axios instance
+import NewsPreview from '../components/NewsPreview';
+
+export default memo(function Home() {
+  const { lang } = useLanguage(); // Get the selected language
+  const [products, setProducts] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [latestProjects, setLatestProjects] = useState([]);
+  const [news, setNews] = useState([]);
+
+  // Text translations for hero section and other headings
+  const t = {
+    hero: {
+      title: { en: "Welcome to Nexus Solar Solutions", am: "እንኳን ወደ ኔክሰስ ሶላር በደህና መጡ", ti: "እንኳዕ ናብ ኔክሰስ ሶላር ብሰላም መፁ" },
+      subtitle: { en: "Providing clean energy solutions for everyone", am: "ለሁሉም ጥሩ ኃይል መፍትሄ እንሰጣለን", ti: "ብሉፅ ናይ ሶላር መፍትሒ ንኩሉ " },
+      button: { en: "View Products", am: "ምርቶችን ይመልከቱ", ti: "ምህርትታትና ይምልከቱ" },
+    },
+    sections: {
+      values: { en: "Our Values", am: "እሴቶች", ti: "እሴታትና" },
+      products: { en: "Products", am: "ምርቶች", ti: "ምህርትታትና" },
+      projects: { en: "Latest Projects", am: "የቅርብ ጊዜ ፕሮጀክቶች", ti: "ናይ ቀረባ ፕሮጀክትታት" },
+      seeMore: { en: "See More", am: "ተጨማሪ ይመልከቱ", ti: "ተወሳኺ ይመልከቱ" },
+      // Added translations for About Us section
+      aboutUs: {
+        title: { en: "About Us", am: "ስለ እኛ", ti: "ብዛዕባና" },
+        subtitle: { en: "Empowering communities with sustainable solar energy solutions.", am: "ማህበራትን በቀጣይነት የሶላር ኃይል መፍትሄዎች በማሳበል።", ti: "ማህበራት ብቀፃላይነት ናይ ሶላር ሓይሊ መፍትሒ ብማሳበል።" },
+        description: { 
+          en: "Nexus Solar and Energy Solution PLC is a registered electromechanical contracting and solar equipment supplier based in Mekelle, Tigray. Since 2012 E.C., we have been delivering innovative solar energy and electrical solutions across Tigray and beyond. Our team brings together over 8 years of professional experience in solar system installation, electrical works, and renewable energy projects. Backed by strong technical expertise, industry certifications, and a track record of successful installations, we are committed to providing reliable, affordable, and high-quality solar solutions to households, businesses, NGOs, and institutions. At Nexus, we believe in building long-term partnerships with our clients while supporting sustainable energy development in Ethiopia.", 
+          am: "ኔክሰስ ሶላር  ሶሉሽን በመቀለ ከተማ  የተመሰረተ የኤሌክትሮ መካኒካል ኮንትራክተር እና የሶላር  መሳሪያ አቅራቢ ድርጅት ነው። ከ 2012 ጀምሮ በትግራይ እና ከትግራይ ውጪ ባሉ የ ሃገሪቱ ኣካባቢዎች አዳዲስ የፀሐይ ኃይል እና የኤሌክትሪክ መፍትሄዎችን በማቅረብ ላይ እንገኛለን።ቡድናችን ከ ስምንት  ዓመታት በላይ በሶላር ሲስተም ተከላ፣ በኤሌክትሪክ ስራዎች እና በታዳሽ ሃይል ፕሮጀክቶች ላይ የሙያ ልምድ ባለቤት ነው። በጠንካራ ቴክኒካል እውቀት፣ በኢንዱስትሪ ሰርተፊኬቶች እና የተሳካ ተከላዎች ታሪክ በመታገዝ አስተማማኝ፣ ተመጣጣኝ እና ከፍተኛ ጥራት ያለው የሶላር መፍትሄዎችን ለቤተሰብ፣ ንግዶች፣ መንግሥታዊ ያልሆኑ ድርጅቶች እና ተቋማት ለማቅረብ ቆርጠን ተነስተናል። በኔክሰስ፣ በኢትዮጵያ ዘላቂ የኃይል ልማትን እየደገፍን ከደንበኞቻችን ጋር የረጅም ጊዜ አጋርነት እንገነባለን ብለን እናምናለን።", 
+          ti: "ኔክሰስ ሶላር ሶሉሽን ኣብ ትግራይ ከተማ መቐለ ዝመደብሩ  ኤሌክትሮሜካኒካል ኮንትራክተርን ናይ ሶላር መሳርሒታትን ኣቕራቢ ትካል እዩ። ካብ 2012 ዓም ጀሚርና ኣብ መላእ ትግራይን ካልኦት ከባቢታት ኢትዮጲያን ሓደሽቲ ናይ ሶላርን ኤሌክትሪካልን መፍትሒታት ከነቕርብ ፀኒሕና ኢና።ድርጅትና ኣብ ምትካል ሶላር ሲስተም፣ ስራሕቲ ኤሌክትሪክን፣ ፕሮጀክትታት ተሓዳሲ ሓይሊን ናይ ልዕሊ 8 ዓመት ሞያዊ ልምዲ አለዎ። ብዕሙቅ ናይ  ቴክኒካዊ ክእለት፡ ናይ ኢንዱስትሪ ምስክር ወረቐት፡ ከምኡ’ውን ናይ ዕዉታት ስራሕቲ ተደጊፍና፡ ንስድራቤታት፡ ትካላት ንግዲ፡ ዘይመንግስታውያን ትካላትን ዘተኣማምን፡ ብተመጣጣኒ ዋጋን ልዑል ጽሬት ዘለዎን ናይ ሶላር ሓይሊ ፍታሕ ንምሃብ ቃል ኣቲና ኣለና።ኣብ ኔክሰስ ኣብ ኢትዮጵያ ዘላቒ ልምዓት ሓይሊ ኤሌትሪክ ንምህናፅ ምስ ዓማዊልና ናይ ነዊሕ ግዜ ሽርክነት ኣብ ምህናጽ ንኣምን።" 
+        },
+      },
+    },
+  };
+
+  useEffect(() => {
+    // Fetch latest products
+    api.get(`/products?lang=${lang}`)
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error(err));
+
+    // Fetch latest projects
+    api.get(`/projects?lang=${lang}`)
+      .then((res) => setProjects(res.data))
+      .catch((err) => console.error(err));
+
+    // Fetch latest projects (formerly news)
+    api.get(`/projects?lang=${lang}`)
+      .then((res) => setLatestProjects(res.data))
+      .catch((err) => console.error(err));
+
+    // Fetch news
+    api.get('/news')
+      .then(res => {
+        // Sort by createdAt descending to get latest first
+        const sortedNews = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setNews(sortedNews);
+        console.log('Fetched news:', sortedNews); // Debug: Check if data is received
+      })
+      .catch(err => {
+        console.error('Failed to fetch news:', err);
+        setNews([]); // Ensure empty array on error
+      });
+  }, [lang]); // Refetch when language changes
+
+  return (
+    <div className="bg-gradient-to-br from-blue-50 via-white to-green-50 min-h-screen animate-fade-in">
+      <Hero t={t} lang={lang} />
+      {/* Enhanced About Us section with gradient background and icon */}
+      <section 
+        className="my-16 py-12 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg shadow-lg mx-4 md:mx-8"
+        style={{
+          backgroundImage: "url('/images/subtle-pattern.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-8 text-green-800 drop-shadow-md" style={{ animation: 'fadeIn 1s ease-in-out' }}>{t.sections.aboutUs.title[lang]}</h2>
+          <p className="text-lg text-gray-700 leading-relaxed text-center max-w-4xl mx-auto" style={{ animation: 'fadeIn 1s ease-in-out 0.5s both' }}>
+            {t.sections.aboutUs.description[lang]}
+          </p>
+        </div>
+      </section>
+      <section id="values" className="my-16 bg-gradient-to-b from-white to-gray-100 py-16 px-4 md:px-8 overflow-x-hidden shadow-inner">
+        <h2 className="text-5xl font-bold text-center mb-8 text-blue-800 drop-shadow-lg">{t.sections.values[lang]}</h2>
+        <Values lang={lang} />
+      </section>
+      <section id="products" className="my-16 bg-gradient-to-b from-white to-gray-100 py-16 px-4 md:px-8 overflow-x-hidden shadow-inner">
+        <h2 className="text-5xl font-bold text-center mb-12 text-blue-800 drop-shadow-lg">{t.sections.products[lang]}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {products.slice(0, 3).map((product, idx) => ( // Limit to 3 products
+            <div key={product._id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border border-transparent hover:border-blue-300 h-full flex flex-col min-w-0 hover:bg-gradient-to-br from-blue-50 to-green-50" style={{ animation: `fadeIn 1s ease-in-out ${idx * 0.2}s both` }}>
+              {product.image && (
+                <img
+                  src={`http://localhost:5000${product.image}`}
+                  alt={product.name?.[lang] || product.name?.en || "Product Image"}
+                  className="w-full h-48 object-cover rounded-lg mb-4 shadow-md hover:shadow-lg transition-shadow duration-300"
+                  loading="lazy" // Add lazy loading
+                />
+              )}
+              <h4 className="text-xl font-bold mb-2 whitespace-normal break-words text-blue-700 hover:text-blue-600 transition-colors">{product.name?.[lang] || product.name?.en || "Unnamed Product"}</h4>
+              <p className={`mt-2 text-sm font-bold ${product.available ? "text-green-500" : "text-red-500"}`}>
+                {product.available ? "Available" : "Unavailable"}
+              </p>
+              <Link
+                to={`/products/${product._id}`}
+                className="text-blue-600 hover:underline mt-auto hover:text-blue-800 transition-colors"
+              >
+                {t.sections.seeMore[lang]}
+              </Link>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-12">
+          <Link to="/products" className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-4 rounded-full hover:from-blue-600 hover:to-green-600 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl">
+            {t.sections.seeMore[lang]}
+          </Link>
+        </div>
+      </section>
+
+      {/* New Section for Latest Project and Top News */}
+      <section className="py-20 px-6 md:px-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          {/* Latest Project */}
+          <h2 className="text-4xl md:text-5xl font-bold mb-12 text-blue-800 text-center">Latest Project</h2>
+          {news.length > 0 ? (
+            <NewsPreview news={news.slice(0, 3)} lang={lang} />
+          ) : (
+            <p className="text-center text-gray-500">No Projects available.</p>
+          )}
+          <div className="text-center mt-12">
+            <Link to="/news" className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-4 rounded-full hover:from-blue-600 hover:to-green-600 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl">
+              See More
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+});
