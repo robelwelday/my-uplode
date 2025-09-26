@@ -29,11 +29,11 @@ function AdminDashboard() {
       return;
     }
 
-    api.get("/products")
+    api.get("/api/products")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error("Failed to fetch products:", err));
 
-    api.get("/news")
+    api.get("/api/news")
       .then((res) => setNews(res.data))
       .catch((err) => console.error("Failed to fetch news:", err));
   }, [navigate]);
@@ -41,7 +41,7 @@ function AdminDashboard() {
   const handleDeleteProduct = async (id) => {
     try {
       const token = localStorage.getItem("adminToken"); // Retrieve the token
-      await api.delete(`/products/${id}`, {
+      await api.delete(`/api/products/${id}`, {
         headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
       });
       setProducts((prev) => prev.filter((p) => p._id !== id)); // Update state correctly
@@ -53,7 +53,7 @@ function AdminDashboard() {
   const handleDeleteNews = async (id) => {
     try {
       const token = localStorage.getItem("adminToken"); // Retrieve the token
-      await api.delete(`/news/${id}`, {
+      await api.delete(`/api/news/${id}`, {
         headers: { Authorization: `Bearer ${token}` }, // Include the token in the headers
       });
       setNews((prev) => prev.filter((n) => n._id !== id)); // Update state correctly
@@ -76,7 +76,7 @@ function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("adminToken"); // Ensure token is included
-      const res = await api.post("/products", formData, {
+      const res = await api.post("/api/products", formData, {
         headers: {
           Authorization: `Bearer ${token}`, // Include Authorization header
         },
@@ -107,7 +107,7 @@ function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("adminToken"); // Ensure token is included
-      const res = await api.post("/news", formData, {
+      const res = await api.post("/api/news", formData, {
         headers: {
           Authorization: `Bearer ${token}`, // Include Authorization header
         },
@@ -138,7 +138,7 @@ function AdminDashboard() {
     try {
       const token = localStorage.getItem("adminToken");
       const res = await api.patch(
-        `/products/${editingProduct._id}`,
+        `/api/products/${editingProduct._id}`,
         formData,
         {
           headers: {
@@ -170,7 +170,7 @@ function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await api.patch(`/news/${editingNews._id}`, formData, {
+      const res = await api.patch(`/api/news/${editingNews._id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -189,8 +189,8 @@ function AdminDashboard() {
   const handleToggleAvailability = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await api.patch(
-        `/products/${id}`,
+      const res = await api.put(
+        `/api/products/${id}/toggle-availability`,
         { available: !currentStatus },
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -40,22 +40,22 @@ export default memo(function Home() {
 
   useEffect(() => {
     // Fetch latest products
-    api.get(`/products?lang=${lang}`)
+    api.get(`/api/products?lang=${lang}`)
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
 
     // Fetch latest projects
-    api.get(`/projects?lang=${lang}`)
+    api.get(`/api/projects?lang=${lang}`)
       .then((res) => setProjects(res.data))
       .catch((err) => console.error(err));
 
     // Fetch latest projects (formerly news)
-    api.get(`/projects?lang=${lang}`)
+    api.get(`/api/projects?lang=${lang}`)
       .then((res) => setLatestProjects(res.data))
       .catch((err) => console.error(err));
 
     // Fetch news
-    api.get('/news')
+    api.get('/api/news')
       .then(res => {
         // Sort by createdAt descending to get latest first
         const sortedNews = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

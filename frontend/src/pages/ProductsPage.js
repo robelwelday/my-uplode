@@ -21,7 +21,7 @@ export default memo(function ProductsPage() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    api.get(`/products?lang=${lang}`) // Pass the selected language to the API
+    api.get(`/api/products?lang=${lang}`) // Pass the selected language to the API
       .then((res) => {
         setProducts(res.data);
       })

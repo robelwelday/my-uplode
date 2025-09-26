@@ -7,7 +7,7 @@ function Products() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    API.get('/products?lang=en')
+    API.get('/api/products?lang=en')
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : res.data.products || [];
         setProducts(data);
