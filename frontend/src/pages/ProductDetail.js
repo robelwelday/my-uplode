@@ -26,7 +26,7 @@ function ProductDetail() {
         <img
           src={`http://localhost:5000${product.image}`}
           alt={product.name?.[lang] || product.name?.en || "Product Image"}
-          className="w-85/100 h-96 object-cover rounded mb-6"
+          className="w-4/5 h-96 object-cover rounded mb-6"
         />
       )}
 
