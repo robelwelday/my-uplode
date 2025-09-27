@@ -39,7 +39,7 @@ function NewsDetail() {
       {newsItem.coverImage && (
         <div className="flex justify-center mb-6">
           <img
-            src={`http://localhost:5000${newsItem.coverImage}`}
+            src={`${newsItem.coverImage}`}
             alt={title}
             className="w-full md:w-2/3 lg:w-1/2 h-auto max-h-96 object-contain rounded-lg shadow-md"
           />

@@ -27,7 +27,7 @@ export default function NewsDetail() {
 
       {newsItem.coverImage && (
         <img
-          src={`http://localhost:5000${newsItem.coverImage}`}
+          src={`${newsItem.coverImage}`}
           alt={newsItem.title?.[lang] || newsItem.title?.en || "News Image"}
           className="w-85/100 h-96 object-cover rounded mb-6"
         />
