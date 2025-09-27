@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
-import api from '../api/api';
+import React, { useEffect, useState, memo } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
+import api from "../api/api";
 
-function NewsDetail() {
+export default memo(function NewsDetail() {
   const { id } = useParams();
   const { lang } = useLanguage();
   const [newsItem, setNewsItem] = useState(null);
@@ -11,48 +11,51 @@ function NewsDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.get(`/news/${id}?lang=${lang}`)
-      .then(res => {
+    setLoading(true);
+    setError(null);
+
+    api.get(`/api/news/${id}?lang=${lang}`) // Add /api prefix
+      .then((res) => {
+        if (!res.data) {
+          throw new Error("No data returned from API");
+        }
         setNewsItem(res.data);
-        setLoading(false);
       })
-      .catch(err => {
-        console.error("Failed to fetch news item:", err);
+      .catch((err) => {
+        console.error("Error fetching news detail:", err);
         setError("Failed to load news item.");
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   }, [id, lang]);
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
-  if (!newsItem) return <p className="text-center mt-10">Project item not found.</p>;
-
-  const title = newsItem.title?.[lang] || newsItem.title?.en || "Untitled News";
-  const content = newsItem.content?.[lang] || newsItem.content?.en || "No content available.";
+  if (loading) return <p className="text-center mt-10 animate-pulse">Loading...</p>;
+  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
   return (
-    <div className="px-4 md:px-20 py-10 bg-gray-50 min-h-screen">
+    <div className="px-4 md:px-20 py-10">
       <Link to="/news" className="text-blue-600 hover:underline mb-6 inline-block">
-        ← Back to Projects
+        ← Back to News
       </Link>
 
       {newsItem.coverImage && (
-        <div className="flex justify-center mb-6">
-          <img
-            src={`${newsItem.coverImage}`}
-            alt={title}
-            className="w-full md:w-2/3 lg:w-1/2 h-auto max-h-96 object-contain rounded-lg shadow-md"
-          />
-        </div>
+        <img
+          src={newsItem.coverImage}
+          alt={newsItem.title?.[lang] || newsItem.title?.en || "News Image"}
+          className="w-full md:w-5/6 h-96 object-cover rounded mb-6"
+        />
       )}
 
-      <h1 className="text-4xl font-bold mb-4 text-gray-800 text-center break-words">{title}</h1>
-      
-      <div className="text-lg text-gray-700 leading-relaxed whitespace-pre-wrap max-w-4xl mx-auto">
-        <p className="break-words">{content}</p>
+      <h1 className="text-4xl font-bold mb-4 break-words whitespace-pre-wrap">
+        {newsItem.title?.[lang] || newsItem.title?.en || "No Title Available"}
+      </h1>
+
+      <div className="text-lg leading-relaxed break-words whitespace-pre-wrap">
+        {(newsItem.content?.[lang] || newsItem.content?.en || "No Description Available")
+          .split("\n")
+          .map((p, i) => (
+            <p key={i} className="mb-4">{p}</p>
+          ))}
       </div>
     </div>
   );
-}
-
-export default NewsDetail;
+});
