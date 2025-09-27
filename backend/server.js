@@ -43,16 +43,17 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
 
 // ------------------ Serve React Frontend ------------------
-const __dirname1 = path.resolve();
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname1, "/frontend/build")));
+  // Serve static files from the React frontend build folder
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
-  );
+  // For React Router: serve index.html for all other requests
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+  });
 } else {
   app.get("/", (req, res) => {
-    res.send("API is running....");
+    res.send("API is running...");
   });
 }
 // -----------------------------------------------------------
@@ -61,6 +62,7 @@ if (process.env.NODE_ENV === "production") {
 app.use(notFound);
 app.use(errorHandler);
 
+// Start server and connect to MongoDB
 async function startServer() {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
