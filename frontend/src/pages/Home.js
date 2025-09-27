@@ -5,6 +5,7 @@ import Values from "../components/Values";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/api"; // Axios instance
 import NewsPreview from '../components/NewsPreview';
+import ProductCard from '../components/ProductCard'; // Import ProductCard
 
 export default memo(function Home() {
   const { lang } = useLanguage(); // Get the selected language
@@ -12,8 +13,9 @@ export default memo(function Home() {
   const [projects, setProjects] = useState([]);
   const [latestProjects, setLatestProjects] = useState([]);
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Text translations for hero section and other headings
   const t = {
     hero: {
       title: { en: "Welcome to Nexus Solar Solutions", am: "እንኳን ወደ ኔክሰስ ሶላር በደህና መጡ", ti: "እንኳዕ ናብ ኔክሰስ ሶላር ብሰላም መፁ" },
@@ -25,7 +27,6 @@ export default memo(function Home() {
       products: { en: "Products", am: "ምርቶች", ti: "ምህርትታትና" },
       projects: { en: "Latest Projects", am: "የቅርብ ጊዜ ፕሮጀክቶች", ti: "ናይ ቀረባ ፕሮጀክትታት" },
       seeMore: { en: "See More", am: "ተጨማሪ ይመልከቱ", ti: "ተወሳኺ ይመልከቱ" },
-      // Added translations for About Us section
       aboutUs: {
         title: { en: "About Us", am: "ስለ እኛ", ti: "ብዛዕባና" },
         subtitle: { en: "Empowering communities with sustainable solar energy solutions.", am: "ማህበራትን በቀጣይነት የሶላር ኃይል መፍትሄዎች በማሳበል።", ti: "ማህበራት ብቀፃላይነት ናይ ሶላር ሓይሊ መፍትሒ ብማሳበል።" },
@@ -39,34 +40,23 @@ export default memo(function Home() {
   };
 
   useEffect(() => {
-    // Fetch latest products
-    api.get(`/api/products?lang=${lang}`)
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err));
-
-    // Fetch latest projects
-    api.get(`/api/projects?lang=${lang}`)
-      .then((res) => setProjects(res.data))
-      .catch((err) => console.error(err));
-
-    // Fetch latest projects (formerly news)
-    api.get(`/api/projects?lang=${lang}`)
-      .then((res) => setLatestProjects(res.data))
-      .catch((err) => console.error(err));
-
-    // Fetch news
-    api.get('/api/news')
-      .then(res => {
-        // Sort by createdAt descending to get latest first
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      api.get(`/api/products?lang=${lang}`).then((res) => setProducts(res.data)).catch((err) => { throw new Error('Failed to load products'); }),
+      api.get(`/api/projects?lang=${lang}`).then((res) => setProjects(res.data)).catch((err) => { throw new Error('Failed to load projects'); }),
+      api.get(`/api/projects?lang=${lang}`).then((res) => setLatestProjects(res.data)).catch((err) => { throw new Error('Failed to load latest projects'); }),
+      api.get('/api/news').then(res => {
         const sortedNews = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setNews(sortedNews);
-        console.log('Fetched news:', sortedNews); // Debug: Check if data is received
-      })
-      .catch(err => {
-        console.error('Failed to fetch news:', err);
-        setNews([]); // Ensure empty array on error
-      });
+      }).catch((err) => { throw new Error('Failed to load news'); })
+    ]).catch((err) => {
+      setError(err.message);
+    }).finally(() => setLoading(false));
   }, [lang]); // Refetch when language changes
+
+  if (loading) return <p className="text-center text-lg text-gray-600 animate-pulse">Loading...</p>;
+  if (error) return <p className="text-center text-red-500 text-lg bg-red-100 p-4 rounded-lg shadow-md">{error}</p>;
 
   return (
     <div className="bg-gradient-to-br from-blue-50 via-white to-green-50 min-h-screen animate-fade-in">
@@ -95,26 +85,7 @@ export default memo(function Home() {
         <h2 className="text-5xl font-bold text-center mb-12 text-blue-800 drop-shadow-lg">{t.sections.products[lang]}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {products.slice(0, 3).map((product, idx) => ( // Limit to 3 products
-            <div key={product._id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border border-transparent hover:border-blue-300 h-full flex flex-col min-w-0 hover:bg-gradient-to-br from-blue-50 to-green-50" style={{ animation: `fadeIn 1s ease-in-out ${idx * 0.2}s both` }}>
-              {product.image && (
-                <img
-                  src={`${product.image}`}
-                  alt={product.name?.[lang] || product.name?.en || "Product Image"}
-                  className="w-full h-48 object-cover rounded-lg mb-4 shadow-md hover:shadow-lg transition-shadow duration-300"
-                  loading="lazy" // Add lazy loading
-                />
-              )}
-              <h4 className="text-xl font-bold mb-2 whitespace-normal break-words text-blue-700 hover:text-blue-600 transition-colors">{product.name?.[lang] || product.name?.en || "Unnamed Product"}</h4>
-              <p className={`mt-2 text-sm font-bold ${product.available ? "text-green-500" : "text-red-500"}`}>
-                {product.available ? "Available" : "Unavailable"}
-              </p>
-              <Link
-                to={`/products/${product._id}`}
-                className="text-blue-600 hover:underline mt-auto hover:text-blue-800 transition-colors"
-              >
-                {t.sections.seeMore[lang]}
-              </Link>
-            </div>
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
         <div className="text-center mt-12">

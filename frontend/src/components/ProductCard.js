@@ -1,11 +1,12 @@
 import React, { memo } from "react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext"; // Import LanguageContext
 
 export default memo(function ProductCard({ product }) {
   const { lang } = useLanguage(); // Get the selected language
 
   return (
-    <div className="relative bg-white rounded-2xl shadow-md p-4 sm:p-6 md:p-8 hover:shadow-2xl hover:border-2 hover:border-yellow-400 transition-all duration-300 group flex flex-col h-full min-w-0 border border-gray-200"> {/* Added subtle border */}
+    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-blue-300">
       {product.image && (
         <img
           src={`${product.image}`} // Ensure the backend URL is prefixed
@@ -30,6 +31,12 @@ export default memo(function ProductCard({ product }) {
           <p className="text-xs sm:text-sm md:text-base break-words overflow-wrap-anywhere">{product.description[lang]}</p>
         </div>
       )}
+      <Link
+        to={`/products/${product._id}`}
+        className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+      >
+        See More
+      </Link>
     </div>
   );
 });

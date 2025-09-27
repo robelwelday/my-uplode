@@ -6,6 +6,8 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: { en: "", am: "", ti: "" },
     description: { en: "", am: "", ti: "" },
@@ -29,13 +31,14 @@ function AdminDashboard() {
       return;
     }
 
-    api.get("/api/products")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Failed to fetch products:", err));
-
-    api.get("/api/news")
-      .then((res) => setNews(res.data))
-      .catch((err) => console.error("Failed to fetch news:", err));
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      api.get("/api/products").then((res) => setProducts(res.data)).catch((err) => { throw new Error('Failed to load products'); }),
+      api.get("/api/news").then((res) => setNews(res.data)).catch((err) => { throw new Error('Failed to load news'); })
+    ]).catch((err) => {
+      setError(err.message);
+    }).finally(() => setLoading(false));
   }, [navigate]);
 
   const handleDeleteProduct = async (id) => {
@@ -203,6 +206,9 @@ function AdminDashboard() {
       console.error("Failed to toggle availability:", err.response?.data || err.message);
     }
   };
+
+  if (loading) return <p className="text-center text-lg text-gray-600 animate-pulse">Loading...</p>;
+  if (error) return <p className="text-center text-red-500 text-lg bg-red-100 p-4 rounded-lg shadow-md">{error}</p>;
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">

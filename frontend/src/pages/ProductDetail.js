@@ -7,14 +7,22 @@ function ProductDetail() {
   const { id } = useParams();
   const { lang } = useLanguage(); // Get the selected language
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     API.get(`/api/products/${id}?lang=${lang}`) // Fetch product based on selected language
       .then(res => setProduct(res.data))
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setError("Failed to load product details.");
+      })
+      .finally(() => setLoading(false));
   }, [id, lang]);
 
-  if (!product) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
+  if (!product) return <p className="text-center mt-10">Product not found.</p>;
 
   return (
     <div className="px-4 md:px-40 py-20">

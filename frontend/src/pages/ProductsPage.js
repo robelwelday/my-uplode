@@ -2,6 +2,7 @@ import React, { useEffect, useState, memo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import api from "../api/api";
 import { Link } from "react-router-dom";
+import ProductCard from '../components/ProductCard'; // Import ProductCard
 
 export default memo(function ProductsPage() {
   const { lang } = useLanguage(); // Remove switchLanguage function
@@ -42,28 +43,7 @@ export default memo(function ProductsPage() {
         {!loading && !error && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {products.map((product) => (
-              <div key={product._id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-blue-300">
-                {product.image && (
-                  <img
-                    src={`${product.image}`}
-                    alt={product.name?.[lang] || product.name?.en || "Product Image"}
-                    className="w-3/4 h-96 object-cover rounded mb-6 shadow-md"
-                    loading="lazy" // Add lazy loading
-                  />
-                )}
-                <h4 className="text-xl font-bold mb-2 whitespace-normal break-words text-blue-700">
-                  {product.name?.[lang] || product.name?.en || "Unnamed Product"}
-                </h4>
-                <p className={`mt-2 text-sm font-bold ${product.available ? "text-green-500" : "text-red-500"}`}>
-                  {product.available ? "Available" : "Unavailable"}
-                </p>
-                <Link
-                  to={`/products/${product._id}`}
-                  className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
-                >
-                  See More
-                </Link>
-              </div>
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         )}
