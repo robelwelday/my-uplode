@@ -9,7 +9,7 @@ function ProductDetail() {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    API.get(`/products/${id}?lang=${lang}`) // Fetch product based on selected language
+    API.get(`/api/products/${id}?lang=${lang}`) // Fetch product based on selected language
       .then(res => setProduct(res.data))
       .catch(err => console.error(err));
   }, [id, lang]);

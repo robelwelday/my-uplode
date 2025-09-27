@@ -15,6 +15,7 @@ const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Products = lazy(() => import("./pages/Products")); // Assuming this is an old/alternate route
 
 // Loading fallback component
 const Loading = () => <div className="flex justify-center items-center min-h-screen">Loading...</div>;
@@ -38,6 +39,7 @@ export default function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/old-products" element={<Products />} /> {/* Adjust if not needed */}
               </Routes>
             </Suspense>
           </div>
