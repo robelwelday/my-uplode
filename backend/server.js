@@ -1,44 +1,61 @@
-require('dotenv').config();
-const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const path = require('path');
-const compression = require('compression'); // Import compression middleware
-const { notFound, errorHandler } = require('./middleware/errorMiddleware');
-const Admin = require('./models/Admin');
+require("dotenv").config();
+const express = require("express");
+const morgan = require("morgan");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const path = require("path");
+const compression = require("compression");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const Admin = require("./models/Admin");
+
 // Routes
-const newsRoutes = require('./routes/news');
-const productRoutes = require('./routes/products');
-const commentRoutes = require('./routes/comments');
-const adminRoutes = require('./routes/admin');
-const contactRoutes = require('./routes/contact'); // Add contact routes
+const newsRoutes = require("./routes/news");
+const productRoutes = require("./routes/products");
+const commentRoutes = require("./routes/comments");
+const adminRoutes = require("./routes/admin");
+const contactRoutes = require("./routes/contact");
 
 const app = express();
 
 // Middleware
-
-
 app.use(cors());
 app.use(express.json());
-app.use(morgan('dev'));
-app.use(compression()); // Use compression middleware
+app.use(morgan("dev"));
+app.use(compression());
 
-// Serve static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-  maxAge: '1d', // Cache for 1 day to reduce requests
-  etag: false // Disable ETag for simplicity
-}));
+// Serve uploads folder
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    maxAge: "1d",
+    etag: false,
+  })
+);
 
 // API Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Backend API is running. Use /api/* endpoints.' });
+app.get("/api", (req, res) => {
+  res.json({ message: "Backend API is running. Use /api/* endpoints." });
 });
-app.use('/api/news', newsRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/comments', commentRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/contact', contactRoutes); // Add contact route
+app.use("/api/news", newsRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/contact", contactRoutes);
+
+// ------------------ Serve React Frontend ------------------
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname1, "/frontend/build")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running....");
+  });
+}
+// -----------------------------------------------------------
 
 // Error Handling
 app.use(notFound);
@@ -50,30 +67,28 @@ async function startServer() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB connected successfully');
-    
-    // Check for and create admin user if needed
+    console.log("MongoDB connected successfully");
+
+    // Ensure admin user exists
     const existingAdmin = await Admin.findOne({ email: "admin@example.com" });
     if (!existingAdmin) {
       await Admin.create({
         username: "admin",
         email: "admin@example.com",
-        password: "mypassword123"
+        password: "mypassword123",
       });
       console.log("Admin user created successfully.");
     } else {
       console.log("Admin user already exists.");
     }
 
-    // Start the server
+    // Start server
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error("MongoDB connection error:", error);
     process.exit(1);
   }
 }
 
 startServer();
-
