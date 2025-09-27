@@ -24,7 +24,7 @@ function ProductDetail() {
 
       {product.image && (
         <img
-          src={`${product.image}`}
+          src={`http://localhost:5000${product.image}`}
           alt={product.name?.[lang] || product.name?.en || "Product Image"}
           className="w-4/5 h-96 object-cover rounded mb-6"
         />
