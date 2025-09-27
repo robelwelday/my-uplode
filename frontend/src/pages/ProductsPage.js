@@ -45,7 +45,7 @@ export default memo(function ProductsPage() {
               <div key={product._id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-blue-300">
                 {product.image && (
                   <img
-                    src={`http://localhost:5000${product.image}`}
+                    src={`${product.image}`}
                     alt={product.name?.[lang] || product.name?.en || "Product Image"}
                     className="w-1/2 h-96 object-cover rounded mb-6 shadow-md"
                     loading="lazy" // Add lazy loading

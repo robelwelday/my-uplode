@@ -98,7 +98,7 @@ export default memo(function Home() {
             <div key={product._id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 border border-transparent hover:border-blue-300 h-full flex flex-col min-w-0 hover:bg-gradient-to-br from-blue-50 to-green-50" style={{ animation: `fadeIn 1s ease-in-out ${idx * 0.2}s both` }}>
               {product.image && (
                 <img
-                  src={`http://localhost:5000${product.image}`}
+                  src={`${product.image}`}
                   alt={product.name?.[lang] || product.name?.en || "Product Image"}
                   className="w-full h-48 object-cover rounded-lg mb-4 shadow-md hover:shadow-lg transition-shadow duration-300"
                   loading="lazy" // Add lazy loading

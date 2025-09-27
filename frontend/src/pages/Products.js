@@ -30,7 +30,7 @@ function Products() {
         {products.map(product => (
           <div key={product._id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', width: '250px' }}>
             <img 
-              src={product.image?.startsWith('http') ? product.image : `http://localhost:5000${product.image}`} 
+              src={product.image?.startsWith('http') ? product.image : `${product.image}`} 
               alt={product.name} 
               style={{ width: '100%', height: '200px', objectFit: 'cover' }} 
             />
