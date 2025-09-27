@@ -31,6 +31,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 }));
 
 // API Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'Backend API is running. Use /api/* endpoints.' });
+});
 app.use('/api/news', newsRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/comments', commentRoutes);
