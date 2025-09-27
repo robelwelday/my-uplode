@@ -35,7 +35,7 @@ function News() {
               {item.coverImage && (
                 <div className="overflow-hidden">
                   <img 
-                    src={`http://localhost:5000${item.coverImage}`} 
+                    src={`${item.coverImage}`} 
                     alt={item.title?.[lang] || item.title?.en} 
                     className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
