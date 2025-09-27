@@ -17,6 +17,8 @@ const contactRoutes = require('./routes/contact'); // Add contact routes
 const app = express();
 
 // Middleware
+
+
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
