@@ -26,10 +26,7 @@ app.use(compression());
 // Serve uploads folder
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, "uploads"), {
-    maxAge: "1d",
-    etag: false,
-  })
+  express.static(path.join(__dirname, "uploads"), { maxAge: "1d", etag: false })
 );
 
 // API Routes
@@ -42,21 +39,19 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
 
-// ------------------ Serve React Frontend ------------------
+// Serve React Frontend
 if (process.env.NODE_ENV === "production") {
-  // Serve static files from the React frontend build folder
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  const frontendBuildPath = path.join(__dirname, "../frontend/build"); // adjust if build is elsewhere
+  app.use(express.static(frontendBuildPath));
 
-  // For React Router: serve index.html for all other requests
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+    res.sendFile(path.join(frontendBuildPath, "index.html"));
   });
 } else {
   app.get("/", (req, res) => {
     res.send("API is running...");
   });
 }
-// -----------------------------------------------------------
 
 // Error Handling
 app.use(notFound);
@@ -71,7 +66,6 @@ async function startServer() {
     });
     console.log("MongoDB connected successfully");
 
-    // Ensure admin user exists
     const existingAdmin = await Admin.findOne({ email: "admin@example.com" });
     if (!existingAdmin) {
       await Admin.create({
@@ -84,7 +78,6 @@ async function startServer() {
       console.log("Admin user already exists.");
     }
 
-    // Start server
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (error) {
