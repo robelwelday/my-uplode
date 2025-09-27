@@ -47,7 +47,7 @@ export default memo(function ProductsPage() {
                   <img
                     src={`${product.image}`}
                     alt={product.name?.[lang] || product.name?.en || "Product Image"}
-                    className="w-1/2 h-96 object-cover rounded mb-6 shadow-md"
+                    className="w-3/4 h-96 object-cover rounded mb-6 shadow-md"
                     loading="lazy" // Add lazy loading
                   />
                 )}
